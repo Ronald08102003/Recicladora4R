@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const pool = require('./db'); // PostgreSQL
+const pool = require('./db'); // PostgreSQL / Supabase
 const nodemailer = require('nodemailer');
 
 const app = express();
@@ -21,22 +21,23 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// ================= RUTAS HTML =================
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'recicladora4r.html')));
-app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'login.html')));
-app.get('/registro', (req, res) => res.sendFile(path.join(__dirname, 'Registro.html')));
-app.get('/olvide_password', (req, res) => res.sendFile(path.join(__dirname, 'restablecer.html')));
-app.get('/panel_admin', (req, res) => res.sendFile(path.join(__dirname, 'panel.html')));
-app.get('/panel_usuario', (req, res) => res.sendFile(path.join(__dirname, 'panel_usuario.html')));
-app.get('/carrito', (req, res) => res.sendFile(path.join(__dirname, 'carrito.html')));
-app.get('/mis_pedidos', (req, res) => res.sendFile(path.join(__dirname, 'mis_pedidos.html')));
-app.get('/gestionar_pedidos', (req, res) => res.sendFile(path.join(__dirname, 'gestionar_pedidos.html')));
-app.get('/productos', (req, res) => res.sendFile(path.join(__dirname, 'productos.html')));
-app.get('/usuarios', (req, res) => res.sendFile(path.join(__dirname, 'usuarios.html')));
-app.get('/reportes', (req, res) => res.sendFile(path.join(__dirname, 'reportes.html')));
-app.get('/gestion_ventas', (req, res) => res.sendFile(path.join(__dirname, 'gestion_ventas.html')));
-app.get('/finalizar_pedido', (req, res) => res.sendFile(path.join(__dirname, 'finalizar_pedido.html')));
-app.get('/ver_detalle', (req, res) => res.sendFile(path.join(__dirname, 'ver_detalle.html')));
+// ================= RUTAS HTML (CORREGIDAS CON NOMBRES EXACTOS) =================
+// Usamos path.resolve y los nombres con mayúsculas tal cual están en tu VS Code
+app.get('/', (req, res) => res.sendFile(path.resolve(__dirname, 'Recicladora4R.html')));
+app.get('/login', (req, res) => res.sendFile(path.resolve(__dirname, 'login.html')));
+app.get('/registro', (req, res) => res.sendFile(path.resolve(__dirname, 'Registro.html')));
+app.get('/olvide_password', (req, res) => res.sendFile(path.resolve(__dirname, 'restablecer.html')));
+app.get('/panel_admin', (req, res) => res.sendFile(path.resolve(__dirname, 'panel.html')));
+app.get('/panel_usuario', (req, res) => res.sendFile(path.resolve(__dirname, 'panel_usuario.html')));
+app.get('/carrito', (req, res) => res.sendFile(path.resolve(__dirname, 'carrito.html')));
+app.get('/mis_pedidos', (req, res) => res.sendFile(path.resolve(__dirname, 'mis_pedidos.html')));
+app.get('/gestionar_pedidos', (req, res) => res.sendFile(path.resolve(__dirname, 'gestionar_pedidos.html')));
+app.get('/productos', (req, res) => res.sendFile(path.resolve(__dirname, 'productos.html')));
+app.get('/usuarios', (req, res) => res.sendFile(path.resolve(__dirname, 'usuarios.html')));
+app.get('/reportes', (req, res) => res.sendFile(path.resolve(__dirname, 'reportes.html')));
+app.get('/gestion_ventas', (req, res) => res.sendFile(path.resolve(__dirname, 'gestion_ventas.html')));
+app.get('/finalizar_pedido', (req, res) => res.sendFile(path.resolve(__dirname, 'finalizar_pedido.html')));
+app.get('/ver_detalle', (req, res) => res.sendFile(path.resolve(__dirname, 'ver_detalle.html')));
 
 // ================= LOGIN =================
 app.post('/api/login', async (req, res) => {
@@ -230,7 +231,8 @@ app.get('/logout', (req, res) => {
     res.redirect('/login');
 });
 
-const PORT = 3000;
+// ================= PUERTO DINÁMICO (CORREGIDO PARA RENDER) =================
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
     console.log('\n=========================================');
     console.log(`✅ RECICLADORA 4R ACTIVA EN PUERTO ${PORT}`);
