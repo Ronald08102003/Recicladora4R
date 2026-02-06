@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const pool = require('./db'); 
+const pool = require('./db'); // Conexión a Supabase configurada en db.js
 const nodemailer = require('nodemailer');
 
 const app = express();
@@ -8,6 +8,8 @@ const app = express();
 // ================= CONFIGURACIÓN =================
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Servir archivos estáticos (CSS, Imágenes, JS frontal) desde la raíz
 app.use(express.static(path.join(__dirname)));
 
 let carritoTemporal = {};
@@ -21,27 +23,26 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// ================= RUTAS HTML (MEJORADAS) =================
+// ================= RUTAS HTML (CORREGIDAS PARA RENDER) =================
+// Se usa path.resolve y nombres exactos con mayúsculas según tu VS Code
+
 app.get('/', (req, res) => res.sendFile(path.resolve(__dirname, 'Recicladora4R.html')));
 app.get('/login', (req, res) => res.sendFile(path.resolve(__dirname, 'login.html')));
-app.get('/login.html', (req, res) => res.redirect('/login'));
 app.get('/registro', (req, res) => res.sendFile(path.resolve(__dirname, 'Registro.html')));
-app.get('/Registro.html', (req, res) => res.redirect('/registro'));
-
-const paginas = [
-    'panel', 'panel_usuario', 'carrito', 'mis_pedidos', 
-    'gestionar_pedidos', 'productos', 'usuarios', 'reportes', 
-    'gestion_ventas', 'finalizar_pedido', 'ver_detalle'
-];
-
-paginas.forEach(pag => {
-    app.get(`/${pag}`, (req, res) => res.sendFile(path.resolve(__dirname, `${pag}.html`)));
-    app.get(`/${pag}.html`, (req, res) => res.redirect(`/${pag}`));
-});
-
 app.get('/olvide_password', (req, res) => res.sendFile(path.resolve(__dirname, 'restablecer.html')));
+app.get('/panel_admin', (req, res) => res.sendFile(path.resolve(__dirname, 'panel.html')));
+app.get('/panel_usuario', (req, res) => res.sendFile(path.resolve(__dirname, 'panel_usuario.html')));
+app.get('/carrito', (req, res) => res.sendFile(path.resolve(__dirname, 'carrito.html')));
+app.get('/mis_pedidos', (req, res) => res.sendFile(path.resolve(__dirname, 'mis_pedidos.html')));
+app.get('/gestionar_pedidos', (req, res) => res.sendFile(path.resolve(__dirname, 'gestionar_pedidos.html')));
+app.get('/productos', (req, res) => res.sendFile(path.resolve(__dirname, 'productos.html')));
+app.get('/usuarios', (req, res) => res.sendFile(path.resolve(__dirname, 'usuarios.html')));
+app.get('/reportes', (req, res) => res.sendFile(path.resolve(__dirname, 'reportes.html')));
+app.get('/gestion_ventas', (req, res) => res.sendFile(path.resolve(__dirname, 'gestion_ventas.html')));
+app.get('/finalizar_pedido', (req, res) => res.sendFile(path.resolve(__dirname, 'finalizar_pedido.html')));
+app.get('/ver_detalle', (req, res) => res.sendFile(path.resolve(__dirname, 'ver_detalle.html')));
 
-// ================= API LOGIN (TU FUNCIÓN) =================
+// ================= API LOGIN =================
 app.post('/api/login', async (req, res) => {
     try {
         const { usuario, clave } = req.body;
@@ -49,44 +50,95 @@ app.post('/api/login', async (req, res) => {
             'SELECT id, nombre, usuario, clave, rol FROM usuarios WHERE usuario = $1',
             [usuario]
         );
-        if (result.rows.length === 0) return res.json({ success: false, message: 'Usuario no encontrado' });
+
+        if (result.rows.length === 0) {
+            return res.json({ success: false, message: 'Usuario no encontrado' });
+        }
+
         const user = result.rows[0];
-        if (clave.trim() !== user.clave.trim()) return res.json({ success: false, message: 'Clave incorrecta' });
+        if (clave.trim() !== user.clave.trim()) {
+            return res.json({ success: false, message: 'Clave incorrecta' });
+        }
+
         res.json({
             success: true,
             userId: user.id,
-            redirect: user.rol === 'admin' ? '/panel' : '/panel_usuario'
+            redirect: user.rol === 'admin' ? '/panel_admin' : '/panel_usuario'
         });
     } catch (err) {
-        res.status(500).json({ success: false, message: err.message });
+        console.error("Error en login:", err.message);
+        res.status(500).json({ success: false, message: 'Error de conexión con la base de datos' });
     }
 });
 
-// ================= API REGISTRO (TU FUNCIÓN) =================
+// ================= API REGISTRO =================
 app.post('/api/registro', async (req, res) => {
     try {
         const { nombre, correo, usuario, clave, telefono, provincia, ciudad, direccion } = req.body;
-        const check = await pool.query('SELECT id FROM usuarios WHERE usuario = $1 OR correo = $2', [usuario, correo]);
-        if (check.rows.length > 0) return res.json({ success: false, message: 'Usuario o correo ya existe' });
+        const check = await pool.query(
+            'SELECT id FROM usuarios WHERE usuario = $1 OR correo = $2',
+            [usuario, correo]
+        );
+
+        if (check.rows.length > 0) {
+            return res.json({ success: false, message: 'Usuario o correo ya existe' });
+        }
+
         await pool.query(`
-            INSERT INTO usuarios (nombre, correo, usuario, clave, rol, telefono, provincia, ciudad, direccion)
+            INSERT INTO usuarios 
+            (nombre, correo, usuario, clave, rol, telefono, provincia, ciudad, direccion)
             VALUES ($1,$2,$3,$4,'cliente',$5,$6,$7,$8)
         `, [nombre, correo, usuario, clave, telefono, provincia, ciudad, direccion]);
+
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
 });
 
-// ================= GESTIÓN PRODUCTOS (TU FUNCIÓN) =================
+// ================= RECUPERAR CLAVE =================
+app.post('/api/olvide-password', async (req, res) => {
+    try {
+        const { correo } = req.body;
+        const result = await pool.query(
+            'SELECT nombre, usuario, clave FROM usuarios WHERE correo = $1',
+            [correo]
+        );
+
+        if (result.rows.length === 0) {
+            return res.json({ success: false, message: 'Correo no registrado' });
+        }
+
+        const user = result.rows[0];
+        await transporter.sendMail({
+            from: '"Recicladora 4R" <ronaldvaldiviesoface@gmail.com>',
+            to: correo,
+            subject: 'Recuperación de acceso',
+            html: `<p>Usuario: ${user.usuario}</p><p>Clave: ${user.clave}</p>`
+        });
+
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// ================= GESTIÓN DE PRODUCTOS =================
 app.get('/api/admin/productos', async (req, res) => {
-    const result = await pool.query('SELECT * FROM productos ORDER BY nombre');
-    res.json(result.rows);
+    try {
+        const result = await pool.query('SELECT * FROM productos ORDER BY nombre');
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
 });
 
 app.post('/api/admin/productos', async (req, res) => {
     const { nombre, categoria, stock, peso_kg } = req.body;
-    await pool.query('INSERT INTO productos (nombre, categoria, stock, peso_kg) VALUES ($1,$2,$3,$4)', [nombre, categoria, stock, peso_kg]);
+    await pool.query(
+        'INSERT INTO productos (nombre, categoria, stock, peso_kg) VALUES ($1,$2,$3,$4)',
+        [nombre, categoria, stock, peso_kg]
+    );
     res.json({ success: true });
 });
 
@@ -95,7 +147,7 @@ app.delete('/api/admin/productos/:id', async (req, res) => {
     res.json({ success: true });
 });
 
-// ================= CARRITO Y PEDIDOS (TU FUNCIÓN) =================
+// ================= CARRITO Y PEDIDOS =================
 app.get('/api/productos-cliente', async (req, res) => {
     const result = await pool.query('SELECT id, nombre, peso_kg, stock FROM productos WHERE stock > 0');
     res.json(result.rows);
@@ -111,7 +163,13 @@ app.get('/api/ver-carrito', async (req, res) => {
     let items = [];
     for (const id in carritoTemporal) {
         const p = await pool.query('SELECT * FROM productos WHERE id = $1', [id]);
-        if (p.rows.length) items.push({ ...p.rows[0], cantidad: carritoTemporal[id], subtotal: p.rows[0].peso_kg * carritoTemporal[id] });
+        if (p.rows.length) {
+            items.push({
+                ...p.rows[0],
+                cantidad: carritoTemporal[id],
+                subtotal: p.rows[0].peso_kg * carritoTemporal[id]
+            });
+        }
     }
     res.json({ items });
 });
@@ -120,17 +178,28 @@ app.post('/api/finalizar-pedido', async (req, res) => {
     const { id_usuario } = req.body;
     try {
         await pool.query('BEGIN');
-        const pedido = await pool.query('INSERT INTO pedidos (id_usuario, fecha, total_peso, estado) VALUES ($1,NOW(),0,$2) RETURNING id', [id_usuario, 'Pendiente']);
+        const pedido = await pool.query(
+            'INSERT INTO pedidos (id_usuario, fecha, total_peso, estado) VALUES ($1,NOW(),0,$2) RETURNING id',
+            [id_usuario, 'Pendiente']
+        );
+
         const idPedido = pedido.rows[0].id;
         let total = 0;
+
         for (const id in carritoTemporal) {
             const cant = carritoTemporal[id];
             const p = await pool.query('SELECT * FROM productos WHERE id = $1', [id]);
             const sub = p.rows[0].peso_kg * cant;
             total += sub;
-            await pool.query('INSERT INTO detalle_pedidos (id_pedido, id_producto, cantidad, peso_subtotal) VALUES ($1,$2,$3,$4)', [idPedido, id, cant, sub]);
+
+            await pool.query(
+                'INSERT INTO detalle_pedidos (id_pedido, id_producto, cantidad, peso_subtotal) VALUES ($1,$2,$3,$4)',
+                [idPedido, id, cant, sub]
+            );
+
             await pool.query('UPDATE productos SET stock = stock - $1 WHERE id = $2', [cant, id]);
         }
+
         await pool.query('UPDATE pedidos SET total_peso = $1 WHERE id = $2', [total, idPedido]);
         await pool.query('COMMIT');
         carritoTemporal = {};
@@ -141,13 +210,16 @@ app.post('/api/finalizar-pedido', async (req, res) => {
     }
 });
 
+// ================= SALIDA =================
 app.get('/logout', (req, res) => {
     carritoTemporal = {};
     res.redirect('/login');
 });
 
+// ================= PUERTO DINÁMICO (CRÍTICO PARA RENDER) =================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
+    console.log('\n=========================================');
     console.log(`✅ RECICLADORA 4R ACTIVA EN PUERTO ${PORT}`);
+    console.log('=========================================\n');
 });
-
