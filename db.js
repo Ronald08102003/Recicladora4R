@@ -3,7 +3,7 @@ const { Pool } = require('pg');
 
 const pool = new Pool({
   connectionString: 'postgresql://postgres:h5BVoOWRqsvdl7lB@db.uncwomrludpermxhuxhq.supabase.co:5432/postgres',
-  ssl: { rejectUnauthorized: false } // obligatorio en Render
+  ssl: { rejectUnauthorized: false } // 🔑 obligatorio en Render
 });
 
 pool.connect(err => {
@@ -15,6 +15,7 @@ pool.connect(err => {
 });
 
 module.exports = pool;
+
 
 
 
