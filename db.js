@@ -1,23 +1,23 @@
 // db.js
 const { Pool } = require('pg');
 
-// Usamos variable de entorno DATABASE_URL (configurada en Render)
-// Si no existe, puedes dejar tu URL de prueba local, pero en producción siempre debe venir de Render
+// URL de conexión a PostgreSQL (Supabase)
+// En Render debe venir de la variable de entorno DATABASE_URL
 const connectionString = process.env.DATABASE_URL || 
   'postgresql://postgres:h5BVoOWRqsvdl7lB@uncwomrludpermxhuxhq.supabase.co:5432/postgres';
 
+// Configuración del Pool
 const pool = new Pool({
   connectionString,
-  ssl: { rejectUnauthorized: false } // necesario para Supabase
+  ssl: { rejectUnauthorized: false } // obligatorio para conexiones externas como Render/Supabase
 });
 
-// Test de conexión (solo en local o logs de Render)
+// Test de conexión (solo para logs)
 pool.connect()
-  .then(() => console.log('✅ Conexión exitosa a la base de datos'))
+  .then(() => console.log('✅ Conexión exitosa a la base de datos de Recicladora 4R'))
   .catch((err) => console.error('❌ Error de conexión a la DB:', err.stack));
 
 module.exports = pool;
-
 
 
 
