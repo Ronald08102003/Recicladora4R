@@ -123,6 +123,34 @@ app.get('/api/productos-cliente', async (req, res) => {
     res.json(r.rows);
 });
 
+// ================= GESTIÓN DE PEDIDOS (ADMIN) =================
+
+// NUEVO: Obtener todos los pedidos del sistema para el admin
+app.get('/api/admin/pedidos', async (req, res) => {
+    try {
+        const r = await pool.query(`
+            SELECT p.id, u.nombre as cliente, p.fecha, p.total_peso, p.estado 
+            FROM pedidos p 
+            JOIN usuarios u ON p.id_usuario = u.id 
+            ORDER BY p.fecha DESC
+        `);
+        res.json(r.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// NUEVO: Cambiar estado de un pedido (Ej: de Pendiente a Recolectado)
+app.put('/api/admin/pedidos/estado', async (req, res) => {
+    const { id, estado } = req.body;
+    try {
+        await pool.query('UPDATE pedidos SET estado=$1 WHERE id=$2', [estado, id]);
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
 // ================= OFERTAS =================
 app.get('/api/ofertas', async (req, res) => {
     const r = await pool.query(`
@@ -222,15 +250,21 @@ app.delete('/api/admin/usuarios/:id', async (req, res) => {
     res.json({ success:true });
 });
 
-// ================= REPORTES =================
+// ================= REPORTES (ACTUALIZADO) =================
 app.get('/api/admin/reportes', async (req, res) => {
-    const pedidos = await pool.query('SELECT COUNT(*) FROM pedidos');
-    const peso = await pool.query('SELECT SUM(total_peso) FROM pedidos');
+    try {
+        const pedidos = await pool.query('SELECT COUNT(*) FROM pedidos');
+        const peso = await pool.query('SELECT SUM(total_peso) FROM pedidos');
+        const clientes = await pool.query("SELECT COUNT(*) FROM usuarios WHERE rol='cliente'");
 
-    res.json({
-        total_pedidos: pedidos.rows[0].count,
-        peso_total: peso.rows[0].sum || 0
-    });
+        res.json({
+            total_pedidos: pedidos.rows[0].count,
+            peso_total: peso.rows[0].sum || 0,
+            total_clientes: clientes.rows[0].count
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // ================= LOGOUT =================
