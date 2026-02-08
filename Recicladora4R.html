@@ -15,11 +15,11 @@
             --text-main: #2c3e50;
         }
 
-        /* 1. ANIMACIÓN DE ENTRADA AL CARGAR EL LINK */
+        /* ===== ANIMACIÓN DE ENTRADA AL CARGAR EL LINK ===== */
         @keyframes pageEntrance {
             from { 
                 opacity: 0; 
-                transform: translateY(20px); 
+                transform: translateY(30px); 
             }
             to { 
                 opacity: 1; 
@@ -34,22 +34,11 @@
             color: var(--text-main);
             line-height: 1.8;
             scroll-behavior: smooth;
-            /* Aplicamos la animación a todo el cuerpo */
-            animation: pageEntrance 1s ease-out forwards;
+            /* Aplicamos la transición a todo el sitio */
+            animation: pageEntrance 1.2s ease-out forwards;
         }
 
-        /* 2. TRANSICIÓN PARA SECCIONES (EFECTO REVELADO) */
-        .reveal {
-            opacity: 0;
-            animation: pageEntrance 0.8s ease-out forwards;
-        }
-
-        /* Delays para que aparezcan escalonadas */
-        #quienes { animation-delay: 0.3s; }
-        #noticias { animation-delay: 0.6s; }
-        #ubicacion { animation-delay: 0.9s; }
-
-        /* ===== ESTILOS DE DISEÑO ===== */
+        /* ===== TOP BAR ===== */
         .top-bar {
             background: var(--dark-green);
             color: white;
@@ -59,6 +48,7 @@
             justify-content: space-between;
         }
 
+        /* ===== HEADER CORPORATIVO ===== */
         header {
             background: rgba(255, 255, 255, 0.98);
             padding: 15px 10%;
@@ -72,9 +62,11 @@
         }
 
         .logo-container { display: flex; align-items: center; gap: 15px; }
-        .logo-container img { height: 70px; }
+        .logo-container img { height: 70px; transition: 0.3s; }
+        .logo-container img:hover { transform: scale(1.1) rotate(10deg); }
 
         .brand-text h1 { margin: 0; font-size: 22px; color: var(--dark-green); font-weight: 800; }
+        .brand-text p { margin: 0; font-size: 11px; color: #7f8c8d; text-transform: uppercase; }
 
         nav { display: flex; gap: 25px; align-items: center; }
         nav a { text-decoration: none; color: var(--text-main); font-weight: 600; font-size: 14px; transition: 0.3s; }
@@ -86,8 +78,11 @@
             padding: 10px 22px;
             border-radius: 50px;
             box-shadow: 0 4px 10px rgba(46, 125, 50, 0.3);
+            transition: 0.3s;
         }
+        .btn-portal:hover { background: var(--dark-green); transform: translateY(-2px); }
 
+        /* ===== SECCIONES ===== */
         .container { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
 
         section {
@@ -99,21 +94,37 @@
             border-top: 5px solid var(--primary-green);
         }
 
-        h2 { font-size: 30px; color: var(--dark-green); margin-bottom: 25px; display: flex; align-items: center; gap: 12px; }
+        h2 { 
+            font-size: 30px; 
+            color: var(--dark-green); 
+            margin-bottom: 25px; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+        }
 
         .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; }
 
-        .map-frame { border-radius: 15px; overflow: hidden; border: 5px solid white; box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
-
-        .news-card {
-            border-left: 5px solid var(--primary-green);
-            padding: 20px;
-            background: var(--light-green);
-            margin-bottom: 15px;
-            border-radius: 0 10px 10px 0;
+        /* Estilo para el mapa solicitado */
+        .map-frame {
+            border-radius: 15px;
+            overflow: hidden;
+            border: 5px solid white;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
         }
 
-        footer { background: #121212; color: #ecf0f1; padding: 60px 10% 30px; text-align: center; }
+        footer {
+            background: #121212;
+            color: #ecf0f1;
+            padding: 60px 10% 30px;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .info-grid { grid-template-columns: 1fr; }
+            header { flex-direction: column; text-align: center; }
+            nav { margin-top: 20px; }
+        }
     </style>
 </head>
 <body>
@@ -141,7 +152,7 @@
 
 <main class="container">
 
-    <section id="quienes" class="reveal">
+    <section id="quienes">
         <div class="info-grid">
             <div>
                 <h2>♻️ Misión Institucional</h2>
@@ -154,22 +165,16 @@
         </div>
     </section>
 
-    <section id="noticias" class="reveal">
-        <h2>♻️ Comunicados Oficiales</h2>
-        <div class="news-card">
-            <p><strong>02 FEB 2026:</strong> Inauguración de nuestra nueva planta de procesamiento.</p>
-        </div>
-    </section>
-
-    <section id="ubicacion" class="reveal">
+    <section id="ubicacion">
         <div class="info-grid">
             <div>
-                <h2>♻️ Ubicación</h2>
-                <p>Visítenos en nuestras oficinas centrales para gestionar entregas particulares.</p>
+                <h2>♻️ Nuestra Ubicación</h2>
+                <p>Nuestra planta principal se encuentra estratégicamente ubicada en Riobamba para recibir entregas de gran tonelaje y facilitar el acceso a la ciudadanía.</p>
                 <p><strong>Dirección:</strong> Av. Edelberto Bonilla Oleas, Riobamba.</p>
+                <p><strong>Atención:</strong> Lunes a Domingo (07:00 - 19:00)</p>
             </div>
             <div class="map-frame">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.135243171358!2d-78.6575196!3d-1.6644043!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91d3a7c67e3edda3%3A0xa2a447ee72ed9df2!2sRecicladora%204R!5e0!3m2!1ses!2sec!4v1707420000000!5m2!1ses!2sec" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                <iframe src="http://googleusercontent.com/maps.google.com/8" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
         </div>
     </section>
@@ -179,6 +184,7 @@
 <footer>
     <div style="border-bottom: 1px solid #333; padding-bottom: 30px; margin-bottom: 30px;">
         <p style="font-size: 22px; color: white;"><strong>Recicladora 4R ♻️</strong></p>
+        <p>Líderes en remediación y logística ambiental.</p>
     </div>
     <p style="font-size: 12px; color: #777;">© 2026 Recicladora 4R | Chimborazo - Ecuador</p>
 </footer>
