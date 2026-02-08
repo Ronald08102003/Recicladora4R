@@ -37,7 +37,7 @@ htmlFiles.forEach(file => {
     });
 });
 
-// ================= RUTA EXTRA PARA BOTÓN INICIO (NO SE BORRA NADA) =================
+// ================= RUTA EXTRA PARA BOTÓN INICIO =================
 app.get('/panel_admin', (req, res) => {
     res.redirect('/panel');
 });
@@ -70,7 +70,7 @@ app.post('/api/login', async (req, res) => {
 
     } catch (err) {
         console.error('❌ ERROR LOGIN:', err.message);
-        res.status(500).json({ success: false, message: 'Error del servidor' });
+        res.status(500).json({ success: false });
     }
 });
 
@@ -85,7 +85,7 @@ app.post('/api/registro', async (req, res) => {
         );
 
         if (check.rows.length > 0) {
-            return res.json({ success: false, message: 'Usuario o correo ya existe' });
+            return res.json({ success: false });
         }
 
         await pool.query(`
@@ -97,28 +97,44 @@ app.post('/api/registro', async (req, res) => {
         res.json({ success: true });
 
     } catch (err) {
-        res.status(500).json({ success: false, message: err.message });
+        res.status(500).json({ success: false });
     }
 });
 
-// ================= PRODUCTOS Y CARRITO =================
+// ================= PRODUCTOS CLIENTE =================
 app.get('/api/productos-cliente', async (req, res) => {
     try {
         const result = await pool.query(
             'SELECT id, nombre, peso_kg, stock FROM productos WHERE stock > 0'
         );
         res.json(result.rows);
-    } catch (err) {
-        res.status(500).send(err.message);
+    } catch {
+        res.status(500).json([]);
     }
 });
 
+// ================= PRODUCTOS ADMIN (INVENTARIO) =================
+app.get('/api/admin/productos', async (req, res) => {
+    try {
+        const result = await pool.query(`
+            SELECT id, nombre, peso_kg, stock
+            FROM productos
+            ORDER BY id ASC
+        `);
+        res.json(result.rows);
+    } catch {
+        res.status(500).json([]);
+    }
+});
+
+// ================= CARRITO =================
 app.post('/api/agregar-al-carrito', (req, res) => {
     const { id_producto, cantidad } = req.body;
     carritoTemporal[id_producto] = (carritoTemporal[id_producto] || 0) + Number(cantidad);
     res.json({ success: true });
 });
 
+// ================= FINALIZAR PEDIDO =================
 app.post('/api/finalizar-pedido', async (req, res) => {
     const { id_usuario } = req.body;
 
@@ -135,17 +151,13 @@ app.post('/api/finalizar-pedido', async (req, res) => {
 
         for (const id in carritoTemporal) {
             const cant = carritoTemporal[id];
-
-            const p = await pool.query(
-                'SELECT * FROM productos WHERE id = $1',
-                [id]
-            );
+            const p = await pool.query('SELECT peso_kg FROM productos WHERE id=$1', [id]);
 
             const sub = p.rows[0].peso_kg * cant;
             total += sub;
 
             await pool.query(
-                'INSERT INTO detalle_pedidos (id_pedido, id_producto, cantidad, peso_subtotal) VALUES ($1,$2,$3,$4)',
+                'INSERT INTO detalle_pedidos (id_pedido,id_producto,cantidad,peso_subtotal) VALUES ($1,$2,$3,$4)',
                 [idPedido, id, cant, sub]
             );
 
@@ -156,64 +168,66 @@ app.post('/api/finalizar-pedido', async (req, res) => {
         }
 
         await pool.query(
-            'UPDATE pedidos SET total_peso = $1 WHERE id = $2',
+            'UPDATE pedidos SET total_peso=$1 WHERE id=$2',
             [total, idPedido]
         );
 
         await pool.query('COMMIT');
-
         carritoTemporal = {};
+
         res.json({ success: true });
 
     } catch (err) {
         await pool.query('ROLLBACK');
-        res.status(500).json({ success: false, message: err.message });
+        res.status(500).json({ success: false });
     }
 });
 
 // ================= ADMIN - USUARIOS =================
 app.get('/api/admin/usuarios', async (req, res) => {
     try {
-        const result = await pool.query(`
-            SELECT id, nombre, usuario, rol
-            FROM usuarios
-            ORDER BY id ASC
-        `);
+        const result = await pool.query(
+            'SELECT id,nombre,usuario,rol FROM usuarios ORDER BY id'
+        );
         res.json(result.rows);
-    } catch (err) {
-        console.error('❌ ERROR LISTAR USUARIOS:', err.message);
+    } catch {
         res.status(500).json([]);
     }
 });
 
 app.put('/api/admin/usuarios/rol', async (req, res) => {
     const { id, rol } = req.body;
-
-    try {
-        await pool.query(
-            'UPDATE usuarios SET rol = $1 WHERE id = $2',
-            [rol, id]
-        );
-        res.json({ success: true });
-    } catch (err) {
-        console.error('❌ ERROR CAMBIAR ROL:', err.message);
-        res.status(500).json({ success: false });
-    }
+    await pool.query('UPDATE usuarios SET rol=$1 WHERE id=$2', [rol, id]);
+    res.json({ success: true });
 });
 
 app.delete('/api/admin/usuarios/:id', async (req, res) => {
-    const { id } = req.params;
+    await pool.query('DELETE FROM usuarios WHERE id=$1', [req.params.id]);
+    res.json({ success: true });
+});
 
-    try {
-        await pool.query(
-            'DELETE FROM usuarios WHERE id = $1',
-            [id]
-        );
-        res.json({ success: true });
-    } catch (err) {
-        console.error('❌ ERROR ELIMINAR USUARIO:', err.message);
-        res.status(500).json({ success: false });
-    }
+// ================= ADMIN - PEDIDOS =================
+app.get('/api/admin/pedidos', async (req, res) => {
+    const result = await pool.query(`
+        SELECT p.id, u.nombre, p.fecha, p.total_peso, p.estado
+        FROM pedidos p
+        JOIN usuarios u ON u.id = p.id_usuario
+        ORDER BY p.fecha DESC
+    `);
+    res.json(result.rows);
+});
+
+// ================= REPORTES (GRÁFICAS) =================
+app.get('/api/reportes/resumen', async (req, res) => {
+    const pedidos = await pool.query('SELECT COUNT(*) FROM pedidos');
+    const peso = await pool.query('SELECT COALESCE(SUM(total_peso),0) FROM pedidos');
+    const usuarios = await pool.query('SELECT COUNT(*) FROM usuarios');
+
+    res.json({
+        total_pedidos: pedidos.rows[0].count,
+        total_peso: peso.rows[0].sum,
+        total_usuarios: usuarios.rows[0].count
+    });
 });
 
 // ================= LOGOUT =================
@@ -227,5 +241,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`✅ RECICLADORA 4R ACTIVA EN PUERTO ${PORT}`);
 });
-
-
