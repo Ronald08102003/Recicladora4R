@@ -1,28 +1,22 @@
-// db.js
-const { Pool } = require('pg');
-
-const pool = new Pool({
-  host: 'uncwomrludpermxhuxhq.supabase.co',
-  port: 5432,
-  user: 'postgres',
-  password: 'h5BVoOWRqsvdl7lB',
-  database: 'postgres',
-  ssl: { rejectUnauthorized: false }
-});
-
-// prueba inmediata
-(async () => {
-  try {
-    const res = await pool.query('SELECT NOW()');
-    console.log('✅ DB conectada a Supabase:', res.rows[0]);
-  } catch (err) {
-    console.error('❌ ERROR DB:', err);
+PS C:\xampp\htdocs\Recicladora4R> node test-db.js
+>>
+✅ CONEXIÓN OK SUPABASE: { now: 2026-02-08T16:18:42.497Z }
+✅ Consulta OK: [
+  {
+    id: 1,
+    nombre: 'Ronald Valdivieso',
+    correo: null,
+    usuario: 'ronald',
+    clave: '123456',
+    fecha_registro: 2026-01-13T22:37:11.513Z,
+    rol: 'admin',
+    telefono: null,
+    ciudad: null,
+    direccion: null,
+    provincia: null
   }
-})();
-
-module.exports = pool;
-
-
+]
+PS C:\xampp\htdocs\Recicladora4R> 
 
 
 
