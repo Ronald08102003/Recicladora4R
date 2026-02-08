@@ -37,6 +37,11 @@ htmlFiles.forEach(file => {
     });
 });
 
+// ================= RUTA EXTRA PARA BOTÓN INICIO (NO SE BORRA NADA) =================
+app.get('/panel_admin', (req, res) => {
+    res.redirect('/panel');
+});
+
 // ================= API LOGIN =================
 app.post('/api/login', async (req, res) => {
     try {
@@ -167,8 +172,6 @@ app.post('/api/finalizar-pedido', async (req, res) => {
 });
 
 // ================= ADMIN - USUARIOS =================
-
-// Listar usuarios
 app.get('/api/admin/usuarios', async (req, res) => {
     try {
         const result = await pool.query(`
@@ -183,7 +186,6 @@ app.get('/api/admin/usuarios', async (req, res) => {
     }
 });
 
-// Cambiar rol
 app.put('/api/admin/usuarios/rol', async (req, res) => {
     const { id, rol } = req.body;
 
@@ -199,7 +201,6 @@ app.put('/api/admin/usuarios/rol', async (req, res) => {
     }
 });
 
-// Eliminar usuario
 app.delete('/api/admin/usuarios/:id', async (req, res) => {
     const { id } = req.params;
 
@@ -211,7 +212,7 @@ app.delete('/api/admin/usuarios/:id', async (req, res) => {
         res.json({ success: true });
     } catch (err) {
         console.error('❌ ERROR ELIMINAR USUARIO:', err.message);
-        res.status(500).json({ success: false, error: err.message });
+        res.status(500).json({ success: false });
     }
 });
 
