@@ -3,76 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recicladora 4R | Acceso al Sistema</title>
+    <title>Recicladora 4R | Acceso Institucional</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>♻️</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --verde-primario: #2e7d32;
             --verde-oscuro: #1b5e20;
-            --gris-borde: #e0e0e0;
-            --gris-fondo: #f8f9fa;
-            --sombra: 0 10px 25px rgba(0,0,0,0.05);
+            --blanco-cristal: rgba(255, 255, 255, 0.9);
+            --sombra-elegante: 0 20px 40px rgba(0,0,0,0.15);
         }
 
-        body { 
-            margin: 0; 
-            font-family: "Segoe UI", Roboto, sans-serif; 
-            background: var(--gris-fondo); 
-            color: #333; 
-            animation: fadeBody 1s ease-in; 
+        /* Animaciones */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            /* Fondo Institucional Unificado */
+            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
+                        url('fondoA.jpg') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            color: #2c3e50;
         }
 
-        @keyframes fadeBody { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        
-        header { 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            background: #ffffff; 
-            padding: 25px; 
-            border-bottom: 4px solid var(--verde-primario); 
-            position: relative; 
-            animation: slideDown 0.8s ease-out;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        /* Header Formal */
+        header {
+            background: white;
+            padding: 15px 5%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            position: relative;
         }
-        .logo { position: absolute; left: 90px; }
-        .logo img { width: 120px; }
-        .titulo h1 { margin: 0; font-size: 30px; color: var(--verde-oscuro); font-weight: 800; }
-        .titulo p { margin-top: 5px; font-size: 14px; color: #666; }
-        
-        .login-container { 
-            background: white; 
-            max-width: 420px; 
-            margin: 60px auto; 
-            padding: 45px; 
-            border: 1px solid var(--gris-borde); 
-            border-radius: 12px; 
-            box-shadow: var(--sombra);
-            animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            max-width: 1200px;
+            width: 100%;
         }
+
+        .header-content img { height: 60px; }
         
-        .login-container h2 { 
-            margin-top: 0; 
-            text-align: center; 
-            color: var(--verde-oscuro); 
-            font-size: 24px;
+        .brand-info h1 { margin: 0; font-size: 24px; color: var(--verde-oscuro); font-weight: 800; }
+        .brand-info p { margin: 0; font-size: 11px; color: #7f8c8d; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* Contenedor de Login */
+        .main-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: var(--blanco-cristal);
+            backdrop-filter: blur(10px);
+            width: 100%;
+            max-width: 400px;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: var(--sombra-elegante);
+            animation: fadeIn 0.8s ease-out;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .login-card h2 {
+            text-align: center;
+            color: var(--verde-oscuro);
             margin-bottom: 30px;
             font-weight: 700;
         }
+
+        .form-group { margin-bottom: 20px; }
         
-        label { font-weight: 700; font-size: 13px; color: #444; text-transform: uppercase; letter-spacing: 0.5px; }
-        
-        input { 
-            width: 100%; 
-            padding: 12px 15px; 
-            margin: 8px 0 25px; 
-            border: 1.5px solid var(--gris-borde); 
-            box-sizing: border-box; 
-            border-radius: 8px; 
+        label { 
+            display: block; 
+            font-size: 12px; 
+            font-weight: 700; 
+            margin-bottom: 8px; 
+            color: #555;
+            text-transform: uppercase;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 1.5px solid #ddd;
+            border-radius: 10px;
+            box-sizing: border-box;
             font-size: 15px;
-            transition: all 0.2s ease;
-            background: #fff;
+            transition: 0.3s;
         }
 
         input:focus {
@@ -80,171 +108,139 @@
             border-color: var(--verde-primario);
             box-shadow: 0 0 0 4px rgba(46, 125, 50, 0.1);
         }
-        
-        button { 
-            width: 100%; 
-            background: var(--verde-primario); 
-            color: white; 
-            border: none; 
-            padding: 14px; 
-            font-size: 16px; 
-            font-weight: 700; 
-            cursor: pointer; 
-            transition: 0.3s; 
-            border-radius: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        button:hover { 
-            background: var(--verde-oscuro); 
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
 
-        .olvido-pass {
-            display: block;
-            text-align: right;
-            margin-top: -15px;
-            margin-bottom: 25px;
-            font-size: 13px;
-            color: var(--verde-primario);
-            text-decoration: none;
-            font-weight: 600;
-        }
-        .olvido-pass:hover { text-decoration: underline; }
-        
-        .mensaje { 
-            text-align: center; 
-            margin-top: 20px; 
-            color: #c62828; 
-            font-weight: 600; 
-            font-size: 14px;
-            padding: 10px;
-            background: #ffebee;
-            border-radius: 6px;
-            display: none; 
-        }
-        
-        .links { 
-            text-align: center; 
-            margin-top: 30px; 
-            border-top: 1px solid #eee; 
-            padding-top: 25px; 
-        }
-        
-        .links p { font-size: 13px; color: #888; margin-bottom: 15px; font-weight: 500; }
-        
-        .btn-crear-cuenta {
-            display: block;
-            text-decoration: none;
-            background: #f1f8e9;
-            color: var(--verde-oscuro);
-            padding: 12px;
-            border-radius: 8px;
+        button {
+            width: 100%;
+            background: var(--verde-primario);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 10px;
+            font-size: 15px;
             font-weight: 700;
-            font-size: 14px;
+            cursor: pointer;
             transition: 0.3s;
-            border: 1px solid #c8e6c9;
-            margin-bottom: 15px;
+            margin-top: 10px;
         }
-        
-        .btn-crear-cuenta:hover { background: #e8f5e9; border-color: var(--verde-primario); }
-        
-        .btn-volver {
-            color: #777;
+
+        button:hover { background: var(--verde-oscuro); transform: translateY(-2px); }
+
+        .extra-links {
+            margin-top: 25px;
+            text-align: center;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        .extra-links a {
+            display: block;
+            margin-bottom: 12px;
             text-decoration: none;
             font-size: 13px;
             font-weight: 600;
-            transition: 0.2s;
+            color: var(--verde-primario);
         }
-        
-        .btn-volver:hover { color: var(--verde-primario); }
 
-        footer { 
-            background: var(--verde-oscuro); 
-            color: white; 
-            text-align: center; 
-            padding: 25px; 
-            margin-top: 60px; 
-            font-size: 13px; 
+        .btn-secondary {
+            background: #f1f8e9;
+            color: var(--verde-oscuro) !important;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #c8e6c9;
+        }
+
+        footer {
+            background: rgba(0,0,0,0.8);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+        }
+
+        /* DISEÑO PARA CELULAR */
+        @media (max-width: 480px) {
+            header { padding: 10px 5%; }
+            .header-content { flex-direction: column; text-align: center; gap: 10px; }
+            .header-content img { height: 50px; }
+            .login-card { padding: 30px 20px; }
+            .login-card h2 { font-size: 20px; }
         }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="logo"><img src="logo.png" alt="Recicladora 4R"></div>
-    <div class="titulo">
-        <h1>Recicladora 4R</h1>
-        <p>Plataforma Institucional de Acceso</p>
+    <div class="header-content">
+        <img src="logo.png" alt="Logo Recicladora 4R">
+        <div class="brand-info">
+            <h1>Recicladora 4R</h1>
+            <p>Acceso Seguro al Sistema</p>
+        </div>
     </div>
 </header>
 
-<div class="login-container">
-    <h2>Iniciar Sesión</h2>
-    <form id="loginForm">
-        <label for="usuario">Usuario</label>
-        <input type="text" id="usuario" required>
+<div class="main-wrapper">
+    <div class="login-card">
+        <h2>Bienvenido</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label>Usuario / Correo</label>
+                <input type="text" id="usuario" placeholder="Ej: rvaldivieso" required>
+            </div>
 
-        <label for="clave">Contraseña</label>
-        <input type="password" id="clave" required>
+            <div class="form-group">
+                <label>Contraseña</label>
+                <input type="password" id="clave" placeholder="••••••••" required>
+            </div>
 
-        <a href="/olvide_password" class="olvido-pass">¿Olvidaste tu contraseña?</a>
+            <button type="submit">Ingresar al Portal</button>
+        </form>
 
-        <button type="submit">Ingresar al Sistema</button>
-    </form>
-    
-    <div id="errorMsg" class="mensaje"></div>
+        <div id="errorMsg" style="display:none; color: #d32f2f; background: #ffebee; padding: 10px; border-radius: 8px; font-size: 13px; margin-top: 15px; text-align: center; font-weight: 600;"></div>
 
-    <div class="links">
-        <p>¿Es su primera vez en el sistema?</p>
-        <a href="/registro" class="btn-crear-cuenta">Registrar nueva cuenta</a>
-        <a href="/" class="btn-volver">← Volver a la página principal</a>
+        <div class="extra-links">
+            <a href="/olvide_password">¿Olvidó sus credenciales?</a>
+            <p style="font-size: 12px; color: #888;">¿No tiene una cuenta institucional?</p>
+            <a href="/registro" class="btn-secondary">Registrar nueva cuenta</a>
+            <a href="/" style="color: #777; margin-top: 10px;">← Volver al Inicio</a>
+        </div>
     </div>
 </div>
 
 <footer>
-    <p>© 2026 Recicladora 4R | Gestión Ambiental y Sostenibilidad</p>
+    <p>© 2026 Recicladora 4R | Gestión Ambiental de Chimborazo</p>
 </footer>
 
 <script>
-document.getElementById('loginForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const usuario = document.getElementById('usuario').value.trim();
+        const clave = document.getElementById('clave').value.trim();
+        const errorMsg = document.getElementById('errorMsg');
 
-    const usuario = document.getElementById('usuario').value.trim();
-    const clave = document.getElementById('clave').value.trim();
-    const errorMsg = document.getElementById('errorMsg');
+        errorMsg.style.display = 'none';
 
-    errorMsg.style.display = 'none';
-    errorMsg.textContent = '';
+        try {
+            const res = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ usuario, clave })
+            });
 
-    try {
-        const res = await fetch('/api/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ usuario, clave })
-        });
+            const data = await res.json();
 
-        const data = await res.json();
-
-        if (data.success) {
-            // Guardamos el ID del usuario para persistencia local
-            localStorage.setItem('id_usuario', data.userId);
-            
-            // Redirección forzada al panel según el rol devuelto por el servidor
-            window.location.replace(data.redirect);
-        } else {
-            errorMsg.textContent = '❌ ' + (data.message || 'Credenciales incorrectas');
+            if (data.success) {
+                localStorage.setItem('id_usuario', data.userId);
+                window.location.replace(data.redirect);
+            } else {
+                errorMsg.textContent = '❌ Credenciales inválidas';
+                errorMsg.style.display = 'block';
+            }
+        } catch (error) {
+            errorMsg.textContent = '⚠️ Error de servidor';
             errorMsg.style.display = 'block';
         }
-
-    } catch (error) {
-        console.error("Error en el login:", error);
-        errorMsg.textContent = '⚠️ Error de conexión con el servidor';
-        errorMsg.style.display = 'block';
-    }
-});
+    });
 </script>
 
 </body>
