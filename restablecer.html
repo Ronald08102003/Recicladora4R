@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recicladora 4R | Restablecer</title>
+    <title>Recicladora 4R | Recuperar</title>
     <style>
         body { margin: 0; font-family: 'Segoe UI', sans-serif; background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('fondoA.jpg') no-repeat center center fixed; background-size: cover; height: 100vh; display: flex; align-items: center; justify-content: center; }
         .card { background: rgba(255,255,255,0.95); padding: 30px; border-radius: 20px; width: 90%; max-width: 380px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.3); }
@@ -11,58 +11,58 @@
         input { width: 100%; padding: 12px; margin: 10px 0; border: 1.5px solid #ddd; border-radius: 10px; box-sizing: border-box; }
         button { width: 100%; padding: 14px; background: #2e7d32; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s; }
         button:hover { background: #1b5e20; }
-        .hidden { display: none; }
+        #mensaje { margin-top: 15px; font-size: 14px; font-weight: 500; }
     </style>
 </head>
 <body>
     <div class="card">
-        <h2>Restablecer Clave</h2>
-        <div id="paso1">
-            <p>Ingresa tu correo para recibir un código de seguridad.</p>
+        <h2>Recuperar Clave</h2>
+        <div id="formulario">
+            <p>Ingresa tu correo institucional para recibir tu contraseña actual.</p>
             <input type="email" id="correo" placeholder="correo@ejemplo.com">
-            <button onclick="enviarCodigo()">Enviar Código</button>
+            <button onclick="enviarClave()">Enviar mi Contraseña</button>
         </div>
-        <div id="paso2" class="hidden">
-            <p>Ingresa el código enviado y tu nueva clave.</p>
-            <input type="text" id="codigo" placeholder="Código de 6 dígitos">
-            <input type="password" id="nuevaClave" placeholder="Nueva Contraseña">
-            <button onclick="cambiarClave()">Actualizar Contraseña</button>
-        </div>
-        <p id="mensaje" style="margin-top:15px; font-size:14px; color:#d32f2f;"></p>
+        <p id="mensaje"></p>
+        <hr style="border: 0.5px solid #eee; margin: 20px 0;">
         <a href="/login" style="color:#2e7d32; text-decoration:none; font-size:13px;">Volver al Login</a>
     </div>
 
     <script>
-        async function enviarCodigo() {
+        async function enviarClave() {
             const correo = document.getElementById('correo').value;
-            const res = await fetch('/api/enviar-codigo', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ correo })
-            });
-            const data = await res.json();
-            if(data.success) {
-                document.getElementById('paso1').classList.add('hidden');
-                document.getElementById('paso2').classList.remove('hidden');
-                document.getElementById('mensaje').style.color = "green";
-                document.getElementById('mensaje').innerText = "Código enviado.";
-            } else { alert(data.message); }
-        }
+            const msj = document.getElementById('mensaje');
+            
+            if(!correo) {
+                msj.style.color = "red";
+                msj.innerText = "Por favor, ingresa tu correo.";
+                return;
+            }
 
-        async function cambiarClave() {
-            const correo = document.getElementById('correo').value;
-            const codigo = document.getElementById('codigo').value;
-            const nuevaClave = document.getElementById('nuevaClave').value;
-            const res = await fetch('/api/restablecer-final', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ correo, codigo, nuevaClave })
-            });
-            const data = await res.json();
-            if(data.success) {
-                alert("Contraseña actualizada con éxito");
-                window.location.href = "/login";
-            } else { alert(data.message); }
+            msj.innerText = "Buscando en la base de datos...";
+            msj.style.color = "blue";
+
+            try {
+                // Usamos la misma ruta del servidor que configuramos antes
+                const res = await fetch('/api/enviar-codigo', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ correo })
+                });
+
+                const data = await res.json();
+
+                if(data.success) {
+                    msj.style.color = "green";
+                    msj.innerText = "✅ La clave ha sido enviada a tu correo.";
+                } else {
+                    msj.style.color = "red";
+                    msj.innerText = "❌ " + (data.message || "Error al procesar la solicitud.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                msj.style.color = "red";
+                msj.innerText = "Error de conexión con el servidor.";
+            }
         }
     </script>
 </body>
