@@ -11,7 +11,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname));
 
 let carritoTemporal = {};
-let codigosVerificacion = {}; // Almacena códigos temporalmente
 
 // ================= EMAIL =================
 const transporter = nodemailer.createTransport({
@@ -36,77 +35,57 @@ htmlFiles.forEach(file => {
     });
 });
 
-// Ruta específica para solucionar el error de la captura
 app.get('/olvide_password', (req, res) => {
     res.sendFile(path.join(__dirname, 'restablecer.html'));
 });
 
 app.get('/panel_admin', (req, res) => res.redirect('/panel'));
 
-// ================= RESTABLECIMIENTO DE CONTRASEÑA (ACTUALIZADO CON DISEÑO) =================
+// ================= RECUPERACIÓN DE CLAVE (CORREGIDO PARA TU BOTÓN) =================
 app.post('/api/enviar-codigo', async (req, res) => {
     const { correo } = req.body;
     try {
-        // Obtenemos los datos completos del usuario para el correo personalizado
+        // Buscamos los datos reales del usuario en la base de datos
         const r = await pool.query('SELECT nombre, usuario, clave FROM usuarios WHERE correo = $1', [correo]);
         
         if (r.rows.length === 0) {
-            return res.json({ success: false, message: 'Este correo no pertenece a ningún usuario registrado.' });
+            return res.json({ success: false, message: 'Este correo no está registrado.' });
         }
 
         const { nombre, usuario, clave } = r.rows[0];
 
-        // Enviamos el correo con formato profesional
-        await transporter.sendMail({
+        // Diseño de correo profesional para la Recicladora 4R
+        const mailOptions = {
             from: `"Recicladora 4R ♻️" <${process.env.EMAIL_USER}>`,
             to: correo,
-            subject: 'Recuperación de Acceso - Recicladora 4R',
+            subject: 'Tus credenciales de acceso - Recicladora 4R',
             html: `
-                <div style="max-width: 600px; margin: auto; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; border: 1px solid #e0e0e0; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-                    <div style="background-color: #2e7d32; padding: 20px; text-align: center;">
-                        <h1 style="color: white; margin: 0; font-size: 24px;">Recicladora 4R</h1>
-                        <p style="color: #e8f5e9; margin: 5px 0 0 0;">Gestión de Residuos Sólidos</p>
+                <div style="max-width: 500px; margin: auto; font-family: Arial, sans-serif; border: 1px solid #ddd; border-radius: 10px; overflow: hidden;">
+                    <div style="background: #2e7d32; color: white; padding: 20px; text-align: center;">
+                        <h2 style="margin:0;">Recicladora 4R</h2>
                     </div>
-                    <div style="padding: 30px; background-color: #ffffff;">
-                        <h2 style="color: #1b5e20;">Hola, ${nombre}</h2>
-                        <p style="color: #555; line-height: 1.6;">Has solicitado recuperar tus credenciales de acceso al sistema. Aquí tienes los detalles de tu cuenta:</p>
-                        
-                        <div style="background-color: #f9f9f9; padding: 20px; border-left: 5px solid #2e7d32; margin: 20px 0;">
-                            <p style="margin: 5px 0;"><strong>Usuario:</strong> <span style="color: #2e7d32;">${usuario}</span></p>
-                            <p style="margin: 5px 0;"><strong>Contraseña actual:</strong> <span style="color: #2e7d32;">${clave.trim()}</span></p>
+                    <div style="padding: 20px; color: #333;">
+                        <p>Hola <strong>${nombre}</strong>,</p>
+                        <p>Has solicitado recordar tus datos de acceso al sistema.</p>
+                        <div style="background: #f4f4f4; padding: 15px; border-radius: 5px; margin: 10px 0;">
+                            <p style="margin: 5px 0;"><strong>Usuario:</strong> ${usuario}</p>
+                            <p style="margin: 5px 0;"><strong>Contraseña:</strong> ${clave.trim()}</p>
                         </div>
-
-                        <p style="color: #555; line-height: 1.6;">Te recomendamos ingresar al sistema y, si lo deseas, cambiar tu contraseña desde tu panel de perfil para mayor seguridad.</p>
-                        
-                        <div style="text-align: center; margin-top: 30px;">
-                            <a href="https://recicladora4r.onrender.com/login" style="background-color: #2e7d32; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">Ir al Sistema</a>
-                        </div>
+                        <p style="font-size: 12px; color: #666;">Si no solicitaste este correo, por favor ignóralo.</p>
                     </div>
-                    <div style="background-color: #f1f1f1; padding: 15px; text-align: center; font-size: 12px; color: #888;">
-                        <p style="margin: 0;">© 2026 Recicladora 4R - UNACH. Todos los derechos reservados.</p>
-                        <p style="margin: 5px 0 0 0;">Riobamba, Ecuador</p>
+                    <div style="background: #eee; padding: 10px; text-align: center; font-size: 11px;">
+                        © 2026 Recicladora 4R - Chimborazo, Ecuador
                     </div>
                 </div>
             `
-        });
-        
-        res.json({ success: true, message: 'Tus credenciales han sido enviadas con éxito.' });
-    } catch (err) { 
-        console.error("Error al enviar correo:", err);
-        res.status(500).json({ success: false, message: 'No pudimos procesar el envío en este momento.' }); 
-    }
-});
+        };
 
-app.post('/api/restablecer-final', async (req, res) => {
-    const { correo, codigo, nuevaClave } = req.body;
-    if (codigosVerificacion[correo] && codigosVerificacion[correo] == codigo) {
-        try {
-            await pool.query('UPDATE usuarios SET clave = $1 WHERE correo = $2', [nuevaClave.trim(), correo]);
-            delete codigosVerificacion[correo];
-            res.json({ success: true });
-        } catch (err) { res.status(500).json({ success: false }); }
-    } else {
-        res.json({ success: false, message: 'Código incorrecto o expirado' });
+        await transporter.sendMail(mailOptions);
+        res.json({ success: true, message: 'La clave ha sido enviada a tu correo.' });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Error al conectar con el servidor de correo.' });
     }
 });
 
@@ -450,7 +429,7 @@ app.get('/api/admin/reportes-detallados', async (req, res) => {
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// ================= NUEVO: DETALLE DE PEDIDO (FACTURA) =================
+// ================= DETALLE DE PEDIDO (FACTURA) =================
 app.get('/api/pedidos/detalle/:id', async (req, res) => {
     const { id } = req.params;
     try {
@@ -492,3 +471,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log('✅ RECICLADORA 4R ACTIVA EN PUERTO: ' + PORT);
 });
+
