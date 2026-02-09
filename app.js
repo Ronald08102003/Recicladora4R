@@ -344,20 +344,63 @@ app.put('/api/admin/propuestas-venta/estado', async (req, res) => {
 });
 
 app.post('/api/vender-producto', async (req, res) => {
-    const { categoria, nombre, peso, id_usuario } = req.body;
-    try {
-        await pool.query('INSERT INTO pedidos (id_usuario, fecha, total_peso, estado) VALUES ($1, NOW(), $2, \'Pendiente\')', [id_usuario, peso]);
-        res.json({ success: true });
-    } catch (err) { res.status(500).json({ success: false }); }
-});
+    const { id_usuario, id_producto, cantidad } = req.body;
 
-app.get('/api/ofertas', async (req, res) => {
-    const r = await pool.query(`
-        SELECT id,nombre,peso_kg,descuento
-        FROM productos
-        WHERE oferta=true AND stock>0
-    `);
-    res.json(r.rows);
+    try {
+        await pool.query('BEGIN');
+
+        // 1️⃣ Obtener producto
+        const prod = await pool.query(
+            'SELECT peso_kg, stock FROM productos WHERE id=$1',
+            [id_producto]
+        );
+
+        if (prod.rows.length === 0) {
+            await pool.query('ROLLBACK');
+            return res.json({ success:false, message:'Producto no encontrado' });
+        }
+
+        if (prod.rows[0].stock < cantidad) {
+            await pool.query('ROLLBACK');
+            return res.json({ success:false, message:'Stock insuficiente' });
+        }
+
+        const pesoSubtotal = prod.rows[0].peso_kg * cantidad;
+
+        // 2️⃣ Crear pedido
+        const pedido = await pool.query(`
+            INSERT INTO pedidos (id_usuario, fecha, total_peso, estado)
+            VALUES ($1, NOW(), $2, 'Pendiente')
+            RETURNING id
+        `, [id_usuario, pesoSubtotal]);
+
+        // 3️⃣ Insertar detalle
+        await pool.query(`
+            INSERT INTO detalle_pedidos
+            (id_pedido, id_producto, cantidad, peso_subtotal)
+            VALUES ($1, $2, $3, $4)
+        `, [
+            pedido.rows[0].id,
+            id_producto,
+            cantidad,
+            pesoSubtotal
+        ]);
+
+        // 4️⃣ Actualizar stock
+        await pool.query(
+            'UPDATE productos SET stock = stock - $1 WHERE id = $2',
+            [cantidad, id_producto]
+        );
+
+        await pool.query('COMMIT');
+
+        res.json({ success:true });
+
+    } catch (err) {
+        await pool.query('ROLLBACK');
+        console.error(err);
+        res.status(500).json({ success:false });
+    }
 });
 
 // ================= CARRITO =================
@@ -542,5 +585,6 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log('✅ RECICLADORA 4R ACTIVA EN PUERTO: ' + PORT);
 });
+
 
 
