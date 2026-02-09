@@ -13,12 +13,12 @@ app.use(express.static(__dirname));
 let carritoTemporal = {};
 let codigosVerificacion = {}; 
 
-// ================= EMAIL (DATOS DIRECTOS) =================
+// ================= EMAIL (DATOS DIRECTOS ACTUALIZADOS) =================
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'ronaldvaldiviesoface@gmail.com', //
-        pass: 'devyzpfnsokkecdw' //
+        user: 'ronaldvaldiviesoface@gmail.com',
+        pass: 'juoldswputpqpmoc' // Tu nueva clave de 16 letras, todo pegado
     }
 });
 
@@ -42,11 +42,11 @@ app.get('/olvide_password', (req, res) => {
 
 app.get('/panel_admin', (req, res) => res.redirect('/panel'));
 
-// ================= RECUPERACIÓN DE CLAVE FORMAL (DIRECTO) =================
+// ================= RECUPERACIÓN DE CLAVE FORMAL (SISTEMA DIRECTO) =================
 app.post('/api/enviar-codigo', async (req, res) => {
     const { correo } = req.body;
     try {
-        // Obtenemos los datos del usuario de Supabase
+        // Consultamos los datos reales del usuario en Supabase
         const r = await pool.query('SELECT nombre, usuario, clave FROM usuarios WHERE correo = $1', [correo]);
         
         if (r.rows.length === 0) {
@@ -55,46 +55,43 @@ app.post('/api/enviar-codigo', async (req, res) => {
 
         const { nombre, usuario, clave } = r.rows[0];
 
-        // Diseño de correo formal e institucional
+        // Diseño de correo institucional profesional
         const mailOptions = {
             from: '"Recicladora 4R ♻️" <ronaldvaldiviesoface@gmail.com>',
             to: correo,
             subject: 'Recuperación de Credenciales - Recicladora 4R',
             html: `
-                <div style="max-width: 600px; margin: auto; font-family: 'Segoe UI', Arial, sans-serif; border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden;">
+                <div style="max-width: 600px; margin: auto; font-family: 'Segoe UI', Tahoma, sans-serif; border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden;">
                     <div style="background-color: #2e7d32; padding: 25px; text-align: center;">
-                        <h1 style="color: white; margin: 0; font-size: 26px;">Recicladora 4R</h1>
-                        <p style="color: #c8e6c9; margin: 5px 0 0 0;">Sistema de Gestión de Reciclaje</p>
+                        <h1 style="color: white; margin: 0; font-size: 24px;">Recicladora 4R</h1>
+                        <p style="color: #c8e6c9; margin: 5px 0 0 0;">Gestión de Residuos Sólidos</p>
                     </div>
                     <div style="padding: 30px; background-color: #ffffff;">
                         <h2 style="color: #1b5e20; margin-top: 0;">Estimado(a) ${nombre},</h2>
-                        <p style="color: #444; line-height: 1.6;">Se ha procesado su solicitud para recuperar los datos de acceso a su cuenta institucional. A continuación, se detallan sus credenciales:</p>
+                        <p style="color: #444;">Se han recuperado con éxito sus credenciales de acceso al sistema:</p>
                         
-                        <div style="background-color: #f5f5f5; padding: 20px; border-left: 6px solid #2e7d32; margin: 25px 0; border-radius: 4px;">
-                            <p style="margin: 8px 0; font-size: 16px;"><strong>Nombre de Usuario:</strong> <span style="color: #2e7d32;">${usuario}</span></p>
-                            <p style="margin: 8px 0; font-size: 16px;"><strong>Contraseña actual:</strong> <span style="color: #2e7d32;">${clave.trim()}</span></p>
+                        <div style="background-color: #f5f5f5; padding: 20px; border-left: 6px solid #2e7d32; margin: 20px 0;">
+                            <p style="margin: 8px 0; font-size: 16px;"><strong>Usuario:</strong> <span style="color: #2e7d32;">${usuario}</span></p>
+                            <p style="margin: 8px 0; font-size: 16px;"><strong>Contraseña:</strong> <span style="color: #2e7d32;">${clave.trim()}</span></p>
                         </div>
 
-                        <p style="color: #666; font-size: 14px; line-height: 1.5;">Por razones de seguridad, le recomendamos iniciar sesión y actualizar su contraseña desde el panel de configuración de su perfil.</p>
-                        
-                        <div style="text-align: center; margin-top: 35px;">
-                            <a href="https://recicladora4r.onrender.com/login" style="background-color: #2e7d32; color: white; padding: 14px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block; font-size: 16px;">Acceder al Sistema</a>
+                        <div style="text-align: center; margin-top: 30px;">
+                            <a href="https://recicladora4r.onrender.com/login" style="background-color: #2e7d32; color: white; padding: 12px 25px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Acceder al Sistema</a>
                         </div>
                     </div>
-                    <div style="background-color: #f8f8f8; padding: 20px; text-align: center; font-size: 13px; color: #888; border-top: 1px solid #eee;">
+                    <div style="background-color: #f1f1f1; padding: 15px; text-align: center; font-size: 12px; color: #888;">
                         <p style="margin: 0;">© 2026 Recicladora 4R | UNACH - Riobamba, Ecuador</p>
-                        <p style="margin: 5px 0 0 0;">Este es un mensaje automático, por favor no responda a este correo.</p>
                     </div>
                 </div>
             `
         };
 
         await transporter.sendMail(mailOptions);
-        res.json({ success: true, message: 'Sus credenciales han sido enviadas correctamente.' });
+        res.json({ success: true, message: 'Credenciales enviadas correctamente.' });
 
     } catch (err) {
         console.error("Error en servidor de correo:", err);
-        res.status(500).json({ success: false, message: 'No se pudo enviar el correo. Verifique su conexión.' });
+        res.status(500).json({ success: false, message: 'Error al procesar el envío. Verifique su cuenta de Gmail.' });
     }
 });
 
