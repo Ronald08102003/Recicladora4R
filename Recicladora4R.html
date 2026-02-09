@@ -15,7 +15,7 @@
             --text-main: #2c3e50;
         }
 
-        /* TRANSICIÓN AL MOMENTO DE INGRESAR AL LINK */
+        /* TRANSICIÓN AL INGRESAR AL LINK */
         @keyframes pageEntrance {
             from { 
                 opacity: 0; 
@@ -30,8 +30,8 @@
         body {
             margin: 0;
             font-family: 'Inter', sans-serif;
-            /* INTEGRACIÓN DE IMAGEN DE FONDO fondoA.jpg con overlay suave */
-            background: linear-gradient(rgba(249, 251, 249, 0.9), rgba(249, 251, 249, 0.9)), 
+            /* INTEGRACIÓN DE IMAGEN DE FONDO fondoA.jpg con overlay */
+            background: linear-gradient(rgba(249, 251, 249, 0.85), rgba(249, 251, 249, 0.85)), 
                         url('fondoA.jpg') no-repeat center center fixed;
             background-size: cover;
             color: var(--text-main);
@@ -50,7 +50,7 @@
             justify-content: space-between;
         }
 
-        /* HEADER ALINEADO PROFESIONALMENTE */
+        /* HEADER ALINEADO */
         header {
             background: rgba(255, 255, 255, 0.98);
             padding: 15px 10%;
@@ -87,19 +87,17 @@
             padding: 10px 22px;
             border-radius: 50px;
             box-shadow: 0 4px 10px rgba(46, 125, 50, 0.3);
-            transition: 0.3s;
         }
-        .btn-portal:hover { background: var(--dark-green); transform: translateY(-2px); }
 
         /* CONTENIDO */
         .container { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
         
         section {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.96);
             padding: 60px;
             border-radius: 15px;
             margin-bottom: 50px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.03);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
             border-top: 5px solid var(--primary-green);
         }
 
@@ -178,20 +176,12 @@
         <div class="info-grid">
             <div>
                 <h2>♻️ Nuestra Ubicación</h2>
-                <p>Nuestra planta principal se encuentra estratégicamente ubicada en Riobamba para recibir entregas de gran tonelaje.</p>
+                <p>Visítenos en nuestra planta principal en Riobamba para gestionar sus entregas de material reciclable.</p>
                 <p><strong>Dirección:</strong> Av. Edelberto Bonilla Oleas, Riobamba.</p>
                 <p><strong>Atención:</strong> Lunes a Domingo (07:00 - 19:00).</p>
             </div>
             <div class="map-frame">
-                <iframe 
-                    src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m13!1d15949.79979700318!2d-78.6476562!3d-1.6814237!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91d3a9c47e3eddd7%3A0x5aa446ee72ed9df2!2sRecicladora%204R!5e0!3m2!1ses!2sec!4v1707436000000!5m2!1ses!2sec" 
-                    width="100%" 
-                    height="450" 
-                    style="border:0;" 
-                    allowfullscreen="" 
-                    loading="lazy" 
-                    referrerpolicy="no-referrer-when-downgrade">
-                </iframe>
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.0860088930845!2d-78.63354992520871!3d-1.6884560982959058!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91d3a9c17e3eddc3%3A0x5aa447ee72ed9df2!2sRecicladora%204R!5e0!3m2!1ses!2sec!4v1770644268631!5m2!1ses!2sec" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
         </div>
     </section>
