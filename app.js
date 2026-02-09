@@ -11,6 +11,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname));
 
 let carritoTemporal = {};
+let codigosVerificacion = {}; // Almacena códigos temporalmente
 
 // ================= EMAIL =================
 const transporter = nodemailer.createTransport({
@@ -35,7 +36,46 @@ htmlFiles.forEach(file => {
     });
 });
 
+// Ruta específica para solucionar el error de la captura
+app.get('/olvide_password', (req, res) => {
+    res.sendFile(path.join(__dirname, 'restablecer.html'));
+});
+
 app.get('/panel_admin', (req, res) => res.redirect('/panel'));
+
+// ================= RESTABLECIMIENTO DE CONTRASEÑA (NUEVO) =================
+app.post('/api/enviar-codigo', async (req, res) => {
+    const { correo } = req.body;
+    try {
+        const r = await pool.query('SELECT id FROM usuarios WHERE correo = $1', [correo]);
+        if (r.rows.length === 0) return res.json({ success: false, message: 'Correo no registrado' });
+
+        const codigo = Math.floor(100000 + Math.random() * 900000);
+        codigosVerificacion[correo] = codigo;
+
+        await transporter.sendMail({
+            from: process.env.EMAIL_USER,
+            to: correo,
+            subject: 'Código de Seguridad - Recicladora 4R ♻️',
+            html: `<h3>Tu código es: <b style="color: #2e7d32; font-size: 24px;">${codigo}</b></h3>
+                   <p>Usa este código para cambiar tu contraseña institucional.</p>`
+        });
+        res.json({ success: true });
+    } catch (err) { res.status(500).json({ success: false }); }
+});
+
+app.post('/api/restablecer-final', async (req, res) => {
+    const { correo, codigo, nuevaClave } = req.body;
+    if (codigosVerificacion[correo] && codigosVerificacion[correo] == codigo) {
+        try {
+            await pool.query('UPDATE usuarios SET clave = $1 WHERE correo = $2', [nuevaClave.trim(), correo]);
+            delete codigosVerificacion[correo];
+            res.json({ success: true });
+        } catch (err) { res.status(500).json({ success: false }); }
+    } else {
+        res.json({ success: false, message: 'Código incorrecto o expirado' });
+    }
+});
 
 // ================= LOGIN =================
 app.post('/api/login', async (req, res) => {
@@ -378,11 +418,9 @@ app.get('/api/admin/reportes-detallados', async (req, res) => {
 });
 
 // ================= NUEVO: DETALLE DE PEDIDO (FACTURA) =================
-// Esta ruta es la que hace que "ver_detalle.html" muestre los datos reales
 app.get('/api/pedidos/detalle/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        // Consultamos datos del pedido y del usuario unido
         const pQuery = await pool.query(`
             SELECT p.id, p.fecha, p.total_peso, p.estado,
                    u.nombre, u.correo, u.telefono, u.provincia, u.ciudad, u.direccion
@@ -394,7 +432,6 @@ app.get('/api/pedidos/detalle/:id', async (req, res) => {
         if (pQuery.rows.length === 0) 
             return res.status(404).json({ success: false });
 
-        // Consultamos la lista de materiales usando un JOIN con productos
         const dQuery = await pool.query(`
             SELECT pr.nombre as material, dp.cantidad, dp.peso_subtotal
             FROM detalle_pedidos dp
@@ -405,7 +442,7 @@ app.get('/api/pedidos/detalle/:id', async (req, res) => {
         res.json({
             success: true,
             pedido: pQuery.rows[0],
-            detalles: dQuery.rows
+            detallles: dQuery.rows
         });
     } catch (err) {
         res.status(500).json({ success: false, error: err.message });
