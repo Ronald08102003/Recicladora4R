@@ -2,65 +2,157 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Recicladora 4R | Detalle de Pedido</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recicladora 4R | Nota de Recepción</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>♻️</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; font-family: "Segoe UI", sans-serif; background: #f5f5f5; color: #333; padding: 20px; }
-        .factura-wrapper { max-width: 850px; margin: 0 auto; background: white; border: 1px solid #ddd; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        
-        .header-factura { display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #2e7d32; padding-bottom: 20px; margin-bottom: 30px; }
-        .header-factura img { width: 130px; }
-        .header-factura .meta { text-align: right; }
-        .header-factura .meta h2 { margin: 0; color: #1b5e20; text-transform: uppercase; }
+        :root {
+            --verde-primario: #2e7d32;
+            --verde-oscuro: #1b5e20;
+            --gris-suave: #f9fbf9;
+            --borde: #e0e0e0;
+        }
 
-        .seccion-info { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
-        .caja { border: 1px solid #eee; padding: 15px; border-radius: 6px; background: #fcfcfc; }
-        .caja h4 { margin: 0 0 10px; color: #2e7d32; text-transform: uppercase; font-size: 13px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-        .caja p { margin: 4px 0; font-size: 14px; }
+        body { 
+            margin: 0; 
+            font-family: 'Inter', sans-serif; 
+            background: var(--gris-suave); 
+            color: #333; 
+            padding: 20px; 
+        }
+
+        .factura-wrapper { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 40px; 
+            border-radius: 12px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
+            border: 1px solid var(--borde);
+        }
+
+        /* HEADER INSTITUCIONAL */
+        .header-factura { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 3px solid var(--verde-primario); 
+            padding-bottom: 20px; 
+            margin-bottom: 30px; 
+        }
+        
+        .header-factura img { width: 100px; height: auto; }
+        .header-factura .meta { text-align: right; }
+        .header-factura .meta h2 { margin: 0; color: var(--verde-oscuro); font-size: 22px; text-transform: uppercase; }
+        .header-factura .meta p { margin: 5px 0; font-size: 13px; color: #666; }
+
+        .seccion-info { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 20px; 
+            margin-bottom: 30px; 
+        }
+
+        .caja { 
+            border: 1px solid var(--borde); 
+            padding: 20px; 
+            border-radius: 10px; 
+            background: #fafafa; 
+        }
+
+        .caja h4 { 
+            margin: 0 0 15px; 
+            color: var(--verde-primario); 
+            text-transform: uppercase; 
+            font-size: 11px; 
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--borde);
+            padding-bottom: 8px;
+        }
+
+        .caja p { margin: 6px 0; font-size: 13px; line-height: 1.4; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { background: #f1f8e9; color: #1b5e20; text-align: left; padding: 12px; border: 1px solid #e0e0e0; }
-        td { padding: 12px; border: 1px solid #eee; font-size: 14px; }
+        th { background: #f1f8e9; color: var(--verde-oscuro); text-align: left; padding: 15px; border: 1px solid var(--borde); font-size: 12px; text-transform: uppercase; }
+        td { padding: 15px; border: 1px solid var(--borde); font-size: 14px; }
 
-        .footer-factura { text-align: right; border-top: 2px solid #2e7d32; padding-top: 20px; margin-top: 20px; }
-        .total-final { font-size: 24px; color: #1b5e20; font-weight: bold; }
-        
-        .firmas { margin-top: 60px; display: flex; justify-content: space-around; }
-        .firma-box { text-align: center; width: 200px; border-top: 1px solid #333; padding-top: 10px; font-weight: bold; font-size: 12px; }
+        .footer-factura { 
+            text-align: right; 
+            margin-top: 30px; 
+            padding-top: 20px;
+            border-top: 1px solid var(--borde);
+        }
 
-        .controles { text-align: center; margin-bottom: 20px; }
-        .btn-accion { background: #2e7d32; color: white; padding: 10px 20px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; text-decoration: none; }
+        .total-final { font-size: 28px; color: var(--verde-oscuro); font-weight: 800; }
         
-        @media print { .no-print { display: none !important; } .factura-wrapper { border: none; box-shadow: none; width: 100%; } }
+        .firmas { margin-top: 60px; display: grid; grid-template-columns: 1fr 1fr; gap: 50px; }
+        .firma-box { 
+            text-align: center; 
+            border-top: 1px solid #333; 
+            padding-top: 10px; 
+            font-weight: 600; 
+            font-size: 11px; 
+            color: #555;
+        }
+
+        .controles { text-align: center; margin-bottom: 25px; display: flex; justify-content: center; gap: 10px; }
+        .btn-accion { 
+            background: var(--verde-primario); 
+            color: white; 
+            padding: 12px 25px; 
+            border: none; 
+            border-radius: 8px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            text-decoration: none; 
+            font-size: 14px;
+            transition: 0.3s;
+        }
+        .btn-accion:hover { background: var(--verde-oscuro); transform: translateY(-2px); }
+        
+        /* RESPONSIVO */
+        @media (max-width: 600px) {
+            .seccion-info, .firmas { grid-template-columns: 1fr; gap: 20px; }
+            .header-factura { flex-direction: column; text-align: center; gap: 15px; }
+            .header-factura .meta { text-align: center; }
+            .factura-wrapper { padding: 20px; }
+        }
+
+        @media print { 
+            .no-print { display: none !important; } 
+            body { background: white; padding: 0; }
+            .factura-wrapper { border: none; box-shadow: none; width: 100%; max-width: 100%; } 
+        }
     </style>
 </head>
 <body>
 
     <div class="controles no-print">
-        <button class="btn-accion" onclick="window.print()">🖨️ Imprimir Factura</button>
-        <button class="btn-accion" style="background:#666;" onclick="history.back()">← Volver</button>
+        <button class="btn-accion" onclick="window.print()">🖨️ Imprimir Nota</button>
+        <button class="btn-accion" style="background:#444;" onclick="history.back()">← Volver al Panel</button>
     </div>
 
     <div class="factura-wrapper">
         <div class="header-factura">
-            <img src="logo.png" alt="Logo">
+            <img src="logo.png" alt="Recicladora 4R">
             <div class="meta">
                 <h2>Nota de Recepción</h2>
                 <p><strong>Folio:</strong> #<span id="folio">000000</span></p>
-                <p><strong>Fecha:</strong> <span id="fecha">--/--/----</span></p>
+                <p><strong>Fecha Emisión:</strong> <span id="fecha">--/--/----</span></p>
             </div>
         </div>
 
         <div class="seccion-info">
             <div class="caja">
-                <h4>Datos del Cliente</h4>
-                <p><strong>Nombre:</strong> <span id="nombreCliente">---</span></p>
+                <h4>Información del Cliente</h4>
+                <p><strong>Nombre:</strong> <span id="nombreCliente">Cargando...</span></p>
                 <p><strong>Email:</strong> <span id="emailCliente">---</span></p>
                 <p><strong>Teléfono:</strong> <span id="telCliente">---</span></p>
             </div>
             <div class="caja">
-                <h4>Ubicación de Entrega</h4>
-                <p><strong>Ciudad:</strong> <span id="ciudadCliente">---</span></p>
-                <p><strong>Provincia:</strong> <span id="provinciaCliente">---</span></p>
+                <h4>Logística de Entrega</h4>
+                <p><strong>Localidad:</strong> <span id="ciudadCliente">---</span>, <span id="provinciaCliente">---</span></p>
                 <p><strong>Dirección:</strong> <span id="dirCliente">---</span></p>
             </div>
         </div>
@@ -68,22 +160,23 @@
         <table>
             <thead>
                 <tr>
-                    <th>Material</th>
+                    <th>Descripción del Material</th>
                     <th style="text-align: center;">Cantidad</th>
-                    <th style="text-align: right;">Peso Subtotal</th>
+                    <th style="text-align: right;">Subtotal (KG)</th>
                 </tr>
             </thead>
-            <tbody id="detalleTabla"></tbody>
+            <tbody id="detalleTabla">
+                </tbody>
         </table>
 
         <div class="footer-factura">
-            <p style="margin: 0; font-size: 13px; color: #666;">PESO TOTAL NETO</p>
+            <p style="margin: 0; font-size: 11px; color: #888; letter-spacing: 1px;">TOTAL MATERIAL RECIBIDO</p>
             <div class="total-final"><span id="totalPeso">0.00</span> kg</div>
         </div>
 
         <div class="firmas">
-            <div class="firma-box">Despachado por Recicladora 4R</div>
-            <div class="firma-box">Recibido por el Cliente</div>
+            <div class="firma-box">Responsable: Recicladora 4R</div>
+            <div class="firma-box">Firma Cliente: Recibido Conforme</div>
         </div>
     </div>
 
@@ -92,33 +185,53 @@
         const idPedido = urlParams.get('id');
 
         async function cargarDetalle() {
-            if (!idPedido) return;
+            if (!idPedido) {
+                alert("ID de pedido no encontrado en la URL");
+                return;
+            }
+
             try {
                 const res = await fetch(`/api/pedidos/detalle/${idPedido}`);
+                if (!res.ok) throw new Error("Error al obtener los datos");
+                
                 const data = await res.json();
 
-                // Llenar campos
-                document.getElementById('folio').innerText = data.pedido.id.toString().padStart(6, '0');
-                document.getElementById('fecha').innerText = new Date(data.pedido.fecha).toLocaleString();
-                document.getElementById('nombreCliente').innerText = data.pedido.nombre;
-                document.getElementById('emailCliente').innerText = data.pedido.correo;
-                document.getElementById('telCliente').innerText = data.pedido.telefono || 'N/A';
-                document.getElementById('ciudadCliente').innerText = data.pedido.ciudad;
-                document.getElementById('provinciaCliente').innerText = data.pedido.provincia;
-                document.getElementById('dirCliente').innerText = data.pedido.direccion;
-                document.getElementById('totalPeso').innerText = parseFloat(data.pedido.total_peso).toFixed(2);
+                // Mapeo de datos principales del pedido
+                const p = data.pedido;
+                document.getElementById('folio').innerText = p.id.toString().padStart(6, '0');
+                document.getElementById('fecha').innerText = new Date(p.fecha).toLocaleString('es-EC');
+                document.getElementById('nombreCliente').innerText = p.nombre || 'N/A';
+                document.getElementById('emailCliente').innerText = p.correo || 'N/A';
+                document.getElementById('telCliente').innerText = p.telefono || '---';
+                document.getElementById('ciudadCliente').innerText = p.ciudad || '---';
+                document.getElementById('provinciaCliente').innerText = p.provincia || '---';
+                document.getElementById('dirCliente').innerText = p.direccion || '---';
+                document.getElementById('totalPeso').innerText = parseFloat(p.total_peso || 0).toFixed(2);
 
+                // Llenado de la tabla de detalles
                 const tabla = document.getElementById('detalleTabla');
-                data.detalles.forEach(d => {
-                    tabla.innerHTML += `
-                        <tr>
-                            <td>${d.material}</td>
-                            <td style="text-align: center;">${d.cantidad}</td>
-                            <td style="text-align: right;">${parseFloat(d.peso_subtotal).toFixed(2)} kg</td>
-                        </tr>`;
-                });
-            } catch (err) { console.error(err); }
+                tabla.innerHTML = ""; // Limpiar antes de llenar
+
+                if (data.detalles && data.detalles.length > 0) {
+                    data.detalles.forEach(d => {
+                        const row = `
+                            <tr>
+                                <td><strong>${d.material}</strong></td>
+                                <td style="text-align: center;">${d.cantidad}</td>
+                                <td style="text-align: right;">${parseFloat(d.peso_subtotal).toFixed(2)} kg</td>
+                            </tr>`;
+                        tabla.innerHTML += row;
+                    });
+                } else {
+                    tabla.innerHTML = "<tr><td colspan='3' style='text-align:center;'>No hay detalles para este pedido</td></tr>";
+                }
+
+            } catch (err) { 
+                console.error("Error cargando detalles:", err);
+                document.getElementById('nombreCliente').innerText = "Error al cargar datos";
+            }
         }
+
         window.onload = cargarDetalle;
     </script>
 </body>
