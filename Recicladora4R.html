@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recicladora 4R | Gestión Ambiental Profesional</title>
+    <title>Recicladora 4R | Gestión Ambiental</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>♻️</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -11,96 +11,112 @@
             --primary-green: #2e7d32;
             --dark-green: #1b5e20;
             --light-green: #e8f5e9;
-            --white: #ffffff;
             --text-main: #2c3e50;
         }
 
         @keyframes pageEntrance {
-            from { opacity: 0; transform: translateY(30px); }
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         body {
             margin: 0;
             font-family: 'Inter', sans-serif;
-            /* Se mantiene el fondo solicitado */
-            background: linear-gradient(rgba(249, 251, 249, 0.85), rgba(249, 251, 249, 0.85)), 
+            /* Fondo con superposición para legibilidad */
+            background: linear-gradient(rgba(249, 251, 249, 0.88), rgba(249, 251, 249, 0.88)), 
                         url('fondoA.jpg') no-repeat center center fixed;
             background-size: cover;
             color: var(--text-main);
-            line-height: 1.8;
+            line-height: 1.6;
             scroll-behavior: smooth;
-            animation: pageEntrance 1.2s ease-out forwards;
+            animation: pageEntrance 1s ease-out;
         }
 
+        /* HEADER RESPONSIVO */
         header {
             background: rgba(255, 255, 255, 0.98);
-            padding: 15px 10%;
+            padding: 10px 5%;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
             position: sticky;
             top: 0;
             z-index: 1000;
         }
 
-        .logo-container { display: flex; align-items: center; gap: 15px; }
-        .logo-container img { height: 70px; }
+        .logo-container { display: flex; align-items: center; gap: 12px; }
+        .logo-container img { height: 55px; width: auto; }
 
-        nav { display: flex; gap: 25px; align-items: center; }
-        nav a { text-decoration: none; color: var(--text-main); font-weight: 600; font-size: 14px; }
+        nav { display: flex; gap: 15px; align-items: center; }
+        nav a { text-decoration: none; color: var(--text-main); font-weight: 600; font-size: 13px; }
 
         .btn-portal {
             background: var(--primary-green);
             color: white !important;
-            padding: 10px 22px;
+            padding: 8px 15px;
             border-radius: 50px;
-            text-decoration: none;
         }
 
-        .container { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
+        /* CONTENEDOR PRINCIPAL */
+        .container { max-width: 1000px; margin: 25px auto; padding: 0 15px; }
         
         section {
-            background: rgba(255, 255, 255, 0.96);
-            padding: 40px;
-            border-radius: 15px;
-            margin-bottom: 50px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
-            border-top: 5px solid var(--primary-green);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            border-top: 4px solid var(--primary-green);
         }
 
-        h2 { font-size: 28px; color: var(--dark-green); margin-bottom: 25px; display: flex; align-items: center; gap: 12px; }
+        h2 { font-size: 22px; color: var(--dark-green); margin-bottom: 15px; }
 
-        /* GRID DE COMUNICADOS CON IMÁGENES CORREGIDAS */
-        .news-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        
+        /* GRIDS DINÁMICOS */
+        .grid-flex { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+        /* ESTILO DE IMÁGENES (Bajar la foto para ver la cara) */
         .news-card {
             background: var(--light-green);
-            border-radius: 12px;
+            border-radius: 10px;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            border-left: 5px solid var(--primary-green);
+            border-left: 4px solid var(--primary-green);
         }
 
         .news-card img {
             width: 100%;
-            height: 300px;
+            height: 280px;
             object-fit: cover;
-            /* Ajuste para bajar la foto y que se vea la cara */
-            object-position: top; 
+            object-position: top center; /* AJUSTE CLAVE: Prioriza la parte superior de la foto */
         }
 
-        .news-text { padding: 20px; font-size: 14px; font-weight: 500; }
+        .news-text { padding: 15px; font-size: 13px; }
 
-        .map-section { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
-        .map-frame { border-radius: 15px; overflow: hidden; border: 5px solid white; box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
+        /* MAPA ADAPTABLE */
+        .map-wrapper { 
+            position: relative; 
+            padding-bottom: 56.25%; /* Relación de aspecto 16:9 */
+            height: 0; 
+            overflow: hidden; 
+            border-radius: 10px;
+            border: 3px solid white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .map-wrapper iframe {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+        }
 
-        footer { background: #121212; color: #ffffff; padding: 40px; text-align: center; }
+        footer { background: #1a1a1a; color: white; padding: 25px; text-align: center; font-size: 12px; }
 
+        /* ADAPTACIÓN A CELULARES */
         @media (max-width: 768px) {
-            .news-grid, .map-section { grid-template-columns: 1fr; }
+            header { flex-direction: column; padding: 15px; text-align: center; }
+            nav { margin-top: 15px; flex-wrap: wrap; justify-content: center; }
+            .grid-flex { grid-template-columns: 1fr; }
+            .news-card img { height: 220px; }
+            section { padding: 20px; }
         }
     </style>
 </head>
@@ -109,51 +125,66 @@
 <header>
     <div class="logo-container">
         <img src="logo.png" alt="Recicladora 4R">
-        <div class="brand-text">
-            <strong>Recicladora 4R</strong><br>
-            <small>ECONOMÍA CIRCULAR Y SOSTENIBLE</small>
+        <div>
+            <h1 style="margin:0; font-size: 18px;">Recicladora 4R</h1>
+            <p style="margin:0; font-size: 10px; color: #666;">ECONOMÍA CIRCULAR</p>
         </div>
     </div>
     <nav>
+        <a href="#institucion">Institución</a>
         <a href="#noticias">Comunicados</a>
         <a href="#ubicacion">Ubicación</a>
-        <a href="login.html" class="btn-portal">Acceso Personal</a>
+        <a href="login.html" class="btn-portal">Acceso</a>
     </nav>
 </header>
 
 <main class="container">
+
+    <section id="institucion">
+        <div class="grid-flex">
+            <div>
+                <h2>Misión</h2>
+                <p>Transformar residuos en recursos mediante procesos innovadores, liderando la gestión ambiental en la provincia de Chimborazo.</p>
+            </div>
+            <div>
+                <h2>Visión</h2>
+                <p>Ser el referente nacional en economía circular para el 2030, promoviendo una cultura de sostenibilidad y respeto al medio ambiente.</p>
+            </div>
+        </div>
+    </section>
+
     <section id="noticias">
         <h2>♻️ Comunicados Oficiales</h2>
-        <div class="news-grid">
+        <div class="grid-flex">
             <div class="news-card">
-                <img src="moreno.png" alt="Inauguración planta">
+                <img src="moreno.png" alt="Comunicado 1">
                 <div class="news-text">
-                    <strong>02 FEB 2026:</strong> Inauguración de nuestra nueva planta de procesamiento de plásticos de alta densidad en Riobamba.
+                    <strong>FEBRERO 2026:</strong> Inauguración de los nuevos sistemas de clasificación automatizada en nuestra planta central.
                 </div>
             </div>
             <div class="news-card">
-                <img src="recicladora.png" alt="Gestión de residuos">
+                <img src="recicladora.png" alt="Comunicado 2">
                 <div class="news-text">
-                    <strong>25 ENE 2026:</strong> Apertura de nuevos canales digitales para optimizar la recepción de propuestas de venta.
+                    <strong>ENERO 2026:</strong> Programa de incentivos para proveedores locales: ¡Trae tu reciclaje y recibe beneficios!
                 </div>
             </div>
         </div>
     </section>
 
     <section id="ubicacion">
-        <div class="map-section">
+        <div class="grid-flex">
             <div>
-                <h2>♻️ Nuestra Ubicación</h2>
-                <p>Nuestra planta principal se encuentra estratégicamente ubicada en Riobamba para facilitar el acceso a la ciudadanía.</p>
-                <p><strong>📍 Dirección:</strong> Av. Edelberto Bonilla Oleas, Riobamba.</p>
-                <p><strong>⏰ Atención:</strong> Lunes a Domingo (07:00 - 19:00).</p>
+                <h2>Nuestra Ubicación</h2>
+                <p>Estamos ubicados estratégicamente para facilitar la recepción de materiales de gran tonelaje.</p>
+                <p><strong>Dirección:</strong> Av. Edelberto Bonilla Oleas, Riobamba.</p>
+                <p><strong>Horario:</strong> Lun - Dom / 07:00 - 19:00</p>
             </div>
-            <div class="map-frame">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.0860088895884!2d-78.63097499999999!3d-1.6884561!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91d3a9c17e3eddc3%3A0x5aa447ee72ed9df2!2sRecicladora%204R!5e0!3m2!1ses!2sec!4v1770646239511!5m2!1ses!2sec" 
-                width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            <div class="map-wrapper">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.0860088895884!2d-78.63097499999999!3d-1.6884561!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91d3a9c17e3eddc3%3A0x5aa447ee72ed9df2!2sRecicladora%204R!5e0!3m2!1ses!2sec!4v1770646239511!5m2!1ses!2sec" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
         </div>
     </section>
+
 </main>
 
 <footer>
